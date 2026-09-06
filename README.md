@@ -23,6 +23,18 @@ that is how you plan a trip, and exact venues are often not even known.
 
 Out of scope: draws, results, players, junior and wheelchair circuits.
 
+## The page
+
+Combined men's and women's events (the Slams, Indian Wells, Adelaide's 250
+and 500) come once from each tour's Wikipedia page and are shown once, tagged
+"men & women", merged at display time by name, country, city, and overlapping
+or back-to-back dates. The "How the levels fit together" block is generated
+from the data with a count per level and per ITF grade; clicking a level sets
+the filter. Weeks are grouped by the Monday of the start date, so a Davis Cup
+tie played Friday to Sunday lists under its week. The search box matches
+tournament, city, or country; the URL carries every filter (`from`, `to`,
+`tour`, `cat`, `surface`, `q`).
+
 ## Refresh
 
 ```

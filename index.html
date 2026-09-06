@@ -15,13 +15,21 @@
 <form id="f" onsubmit="return false">
   <label>from <input id="from" type="date"></label>
   <label>to <input id="to" type="date"></label>
+  <span id="presets" class="presets"><a href="#" data-preset="week">this week</a> · <a href="#" data-preset="eight">next 8 weeks</a> · <a href="#" data-preset="season">whole season</a></span>
   <label><input type="checkbox" name="tour" value="ATP" checked> men</label>
   <label><input type="checkbox" name="tour" value="WTA" checked> women</label>
   <label>level <select id="cat"><option value="">all</option></select></label>
   <label>surface <select id="surface"><option value="">all</option></select></label>
+  <input id="q" type="search" placeholder="tournament, city, or country" aria-label="Search">
 </form>
 
+<details>
+  <summary>How the levels fit together</summary>
+  <ol id="pyramid" class="pyramid"></ol>
+</details>
+
 <div id="map"></div>
+<p id="legend" class="legend"></p>
 
 <p id="count"></p>
 <div id="list"></div>
