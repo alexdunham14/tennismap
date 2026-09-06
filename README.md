@@ -45,6 +45,31 @@ plain HTTP clients, and the cup sites render their draws client-side with no
 data in the page. Wikipedia's tables are maintained within days of the
 official calendars and are parseable with the standard library.
 
+## Cancellations
+
+Tournaments get announced and then cancelled, and the official sites are slow
+to say so: the ATP's page for the 2026 Durham Challenger still presented it as
+an active event months after it was dropped. Two signals catch this:
+
+1. **Wikipedia's "Cancelled tournaments" section.** The yearly Challenger page
+   has one ("The following tournaments were formally announced by the ATP
+   before being cancelled"). The seed reads any table under a heading
+   containing "Cancel" and marks those events `cancelled`, which the site
+   hides and names in its footer line. The ATP, WTA, WTA 125, and ITF pages
+   had no such section in 2026; the seed handles one if it appears.
+2. **A past event with no champion recorded.** The seed records `played` from
+   the Champions cell. `./scripts/suspects.py` lists events more than two
+   weeks past with no result, which is either a cancellation or Wikipedia
+   lagging. Those candidates need a check against news or the tournament's
+   own page; confirmed ones go in `cancellations.json` as
+   `{"name", "start", "status", "source", "note"}` and `refresh` applies them.
+
+Run the sweep after each monthly refresh:
+
+```
+./scripts/suspects.py > seed/out/suspects.json   # then verify each, by hand or with an agent
+```
+
 ## Layout
 
 - `tournaments.json`: the data, one object per event.

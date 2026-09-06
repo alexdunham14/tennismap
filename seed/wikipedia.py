@@ -53,21 +53,27 @@ def fetch(url):
 
 
 class Tables(HTMLParser):
-    """Collects every <table> as rows of (rowspan, text) cells, keeping <br> as newlines."""
+    """Collects every <table> as rows of (rowspan, text) cells, keeping <br> as newlines.
+    Also records the nearest preceding h2/h3 heading text for each table in .headings."""
     def __init__(self):
-        super().__init__(); self.tables = []; self.row = None; self.cell = None; self.depth = 0; self.attr = {}
+        super().__init__(); self.tables = []; self.headings = []; self.row = None; self.cell = None; self.depth = 0; self.attr = {}
+        self.heading = None; self.in_heading = False; self.hbuf = []
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
-        if tag == "table": self.depth += 1; self.tables.append([])
+        if tag in ("h2", "h3"): self.in_heading = True; self.hbuf = []
+        if tag == "table": self.depth += 1; self.tables.append([]); self.headings.append(self.heading)
         elif tag == "tr" and self.depth: self.row = []
         elif tag in ("td", "th") and self.row is not None: self.cell = []; self.attr = a
         elif tag == "br" and self.cell is not None: self.cell.append("\n")
     def handle_endtag(self, tag):
+        if tag in ("h2", "h3") and self.in_heading:
+            self.in_heading = False; self.heading = re.sub(r"\s+", " ", "".join(self.hbuf)).strip()
         if tag == "table": self.depth -= 1
         elif tag == "tr" and self.row is not None: self.tables[-1].append(self.row); self.row = None
         elif tag in ("td", "th") and self.cell is not None:
             self.row.append((int(self.attr.get("rowspan") or 1), html.unescape("".join(self.cell)))); self.cell = None
     def handle_data(self, d):
+        if self.in_heading: self.hbuf.append(d)
         if self.cell is not None: self.cell.append(d)
 
 
@@ -80,12 +86,14 @@ def parse_page(tour, title, year):
     page = fetch(f"https://en.wikipedia.org/wiki/{title}")
     p = Tables(); p.feed(page)
     out = []
-    for table in p.tables:
+    for table, heading in zip(p.tables, p.headings):
         if not table or not any("Tournament" in c[1] for c in table[0]):
             continue
         header = [re.sub(r"\s+", " ", c[1]).strip() for c in table[0]]
         if "Week" not in header[0] and "Date" not in header[0]:
             continue
+        cancelled_table = bool(heading and re.search(r"[Cc]ancel", heading))
+        champ_i = next((i for i, h in enumerate(header) if re.search(r"Champion|Winner", h)), None)
         week = None
         for row in table[1:]:
             cells = [c for c in row]
@@ -96,6 +104,7 @@ def parse_page(tour, title, year):
             if wd and len(cells) > 1 and len(clean(cells[1][1])) >= 2:
                 week = wd
                 tcell = cells[1][1]
+                champ = cells[2][1] if len(cells) > 2 else ""
             elif wd and len(cells) == 1:
                 week = wd
                 continue
@@ -103,6 +112,7 @@ def parse_page(tour, title, year):
                 # continuation row (doubles line) or a row whose first cell is the tournament
                 if len(clean(cells[0][1])) >= 3 and re.search(r"(Hard|Clay|Grass|Carpet)", cells[0][1]) and week:
                     tcell = cells[0][1]
+                    champ = cells[1][1] if len(cells) > 1 else ""
                 else:
                     continue
             lines = clean(tcell)
@@ -146,6 +156,8 @@ def parse_page(tour, title, year):
                 "start": week.isoformat(), "end": (week + dt.timedelta(days=days)).isoformat(),
                 "prize": prize.group(0) if prize else None, "grade": grade.group(1) if grade else None,
                 "draw": draw.group(1) + " singles" if draw else None,
+                "cancelled": cancelled_table,
+                "played": None if cancelled_table or champ_i is None else bool(re.search(r"\d–\d|w/o|walkover", champ)),
                 "page": title,
             })
     return out
@@ -167,8 +179,14 @@ def main():
         if len(got) < minimum:
             sys.exit(f"{title}: only {len(got)} events parsed, expected at least {minimum}; page layout may have changed")
         events += got
+    cancelled = {(e["tour"], e["name"], e["start"]) for e in events if e["cancelled"]}
+    for e in events:
+        if (e["tour"], e["name"], e["start"]) in cancelled:
+            e["cancelled"] = True
     seen = set()
     events = [e for e in events if not ((e["tour"], e["name"], e["start"]) in seen or seen.add((e["tour"], e["name"], e["start"])))]
+    # Yearly pages sometimes carry the previous season's December weeks; keep only from mid-December on.
+    events = [e for e in events if e["start"] >= f"{year - 1}-12-20"]
     events.sort(key=lambda e: (e["start"], e["tour"], e["name"]))
     json.dump({"season": year, "generated": dt.date.today().isoformat(), "tournaments": events}, sys.stdout, ensure_ascii=False, indent=0)
     print(f"{len(events)} events total", file=sys.stderr)

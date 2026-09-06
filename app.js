@@ -4,7 +4,8 @@
     fetch("tournaments.json", { cache: "no-cache" }).then(r => r.json()),
     fetch("cities.json", { cache: "no-cache" }).then(r => r.json()),
   ]);
-  const events = data.tournaments;
+  const cancelled = data.tournaments.filter(e => e.cancelled);
+  const events = data.tournaments.filter(e => !e.cancelled);
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const local = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
   const fmt = s => local(s).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
@@ -79,6 +80,6 @@
     layer.eachLayer(m => { const ll = m.getLatLng(); if (ll.lat === c.lat && ll.lng === c.lon) m.openPopup(); });
   });
   for (const el of document.querySelectorAll("#f input, #f select")) el.addEventListener("change", render);
-  $("meta").textContent = `${data.season} season, ${events.length} tournaments and ties, from Wikipedia's ${data.season} ATP Tour, WTA Tour, ATP Challenger Tour, WTA 125, ITF World Tennis Tour, Davis Cup, and Billie Jean King Cup pages, read on ${data.generated}.`;
+  $("meta").textContent = `${data.season} season, ${events.length} tournaments and ties${cancelled.length ? `, plus ${cancelled.length} announced and then cancelled (${cancelled.map(e => e.name).join(", ")}), not shown` : ""}, from Wikipedia's ${data.season} ATP Tour, WTA Tour, ATP Challenger Tour, WTA 125, ITF World Tennis Tour, Davis Cup, and Billie Jean King Cup pages, read on ${data.generated}.`;
   render();
 })();

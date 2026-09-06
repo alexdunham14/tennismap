@@ -11,6 +11,13 @@ python3 - <<'PY'
 import json
 tour = json.load(open("seed/out/tour.json")); cups = json.load(open("seed/out/cups.json"))
 events = tour["tournaments"] + cups["tournaments"]
+# Verified cancellations found by the sweep (scripts/suspects.py + a human or agent check).
+overrides = {(c["name"], c["start"]): c for c in json.load(open("cancellations.json"))}
+for e in events:
+    c = overrides.get((e["name"], e["start"]))
+    if c and c.get("status") in ("cancelled", "postponed"):
+        e["cancelled"] = True
+        e["cancellation_source"] = c.get("source")
 events.sort(key=lambda e: (e["start"], e["tour"], e["name"]))
 json.dump({"season": tour["season"], "generated": tour["generated"], "tournaments": events}, open("tournaments.json", "w"), ensure_ascii=False, indent=0)
 print(f"{len(events)} events written to tournaments.json")
