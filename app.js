@@ -13,7 +13,8 @@
   const CATS = ["Grand Slam", "1000", "500", "250", "Challenger/125", "ITF", "Finals", "Team", "Olympics", "Other"];
   const COLOR = { "Grand Slam": "#8a3b12", "1000": "#c0562a", "500": "#e0864f", "250": "#efb08a", "Challenger/125": "#b9b0a5", ITF: "#d6d0c8", Finals: "#8a3b12", Team: "#5b7a8a", Olympics: "#5b7a8a", Other: "#b9b0a5" };
   const LABEL = { "Challenger/125": "Challenger / WTA 125", ITF: "ITF World Tennis Tour", Team: "Davis Cup, BJK Cup, team events" };
-  const tag = e => `${e.tour === "ATP" ? "men" : "women"} · ${e.grade || (LABEL[e.category] || e.category)} · ${e.surface}`;
+  const SHORT = { "Challenger/125": "Challenger / 125", ITF: "ITF", Team: "team" };
+  const tag = e => `${e.tour === "ATP" ? "men" : "women"} · ${e.grade || SHORT[e.category] || e.category} · ${e.surface}`;
 
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const p = new URLSearchParams(location.search);
