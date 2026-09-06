@@ -1,34 +1,49 @@
 # Tennis Map
 
-Every professional tennis tournament of the season on a map, filterable by
-tour, level, surface, and date. City-level, because that is how you plan a
-trip, and exact venues are often not even known.
+Every professional tennis tournament of the season on a map, from the Grand
+Slams down to the ITF World Tennis Tour, plus Davis Cup and Billie Jean King
+Cup ties. Filterable by tour, level, surface, and date. City-level, because
+that is how you plan a trip, and exact venues are often not even known.
 
 ## Definition of done
 
 - A static page: map with a point per city, sized by number of events in the
   selected range, and a plain list by week underneath. Filters for date range,
   men's/women's, level (Grand Slam, 1000, 500, 250, Challenger and WTA 125,
-  team events), and surface.
-- One season's calendar for ATP, WTA, ATP Challenger, and WTA 125 loaded from
-  Wikipedia's yearly tour pages by a seed script, run once a year.
+  ITF, team events), and surface.
+- Three tiers of data, each with its own seed script:
+  1. ATP, WTA, ATP Challenger, WTA 125: Wikipedia's yearly tour pages, once a season.
+  2. ITF World Tennis Tour, men's and women's: about 1,200 events a year,
+     published a few months ahead and changed weekly, so refreshed monthly.
+  3. Davis Cup and Billie Jean King Cup ties: dated, with host city, refreshed monthly.
+- A monthly workflow that reruns the ITF and cup seeds, geocodes new cities,
+  commits, and deploys. If a source's format changes, that seed fails loudly and
+  the site keeps the last good data.
 - Cities geocoded once into `cities.json`, hand-corrected where needed.
 
-Out of scope: ITF World Tennis Tour (a thousand events, changes weekly),
-draws, results, players.
+Out of scope: draws, results, players, junior and wheelchair circuits.
 
-## Refresh for a new season
+## Refresh
 
 ```
-./seed/wikipedia.py 2027 > tournaments.json
-./scripts/geocode.py
-git commit -am "2027 calendar" && git push
+./refresh          # this season
+./refresh 2027     # a new season, once its Wikipedia pages exist
 ```
 
-The seed parses the schedule tables of the `<year> ATP Tour`, `<year> WTA
-Tour`, `<year> ATP Challenger Tour`, and `<year> WTA 125 tournaments` pages.
-Wikipedia reorganises those tables occasionally; if the parse finds fewer
-events than expected it says so and exits without writing.
+`refresh` runs both seeds, merges them into `tournaments.json`, and geocodes
+any city not yet in `cities.json`. A GitHub Actions workflow runs it on the
+first of every month and deploys. `seed/wikipedia.py` parses the schedule
+tables of the `<year> ATP Tour`, `WTA Tour`, `ATP Challenger Tour`, `WTA 125
+tournaments`, and the quarterly `ITF Men's/Women's World Tennis Tour` pages;
+`seed/cups.py` parses the tie tables of the `<year> Davis Cup` and `Billie
+Jean King Cup` pages. Wikipedia reorganises tables occasionally; if a parse
+finds fewer events than expected it says so and exits without writing.
+
+The official ITF, Davis Cup, and Billie Jean King Cup sites were checked and
+rejected as sources: itftennis.com sits behind bot protection that blocks
+plain HTTP clients, and the cup sites render their draws client-side with no
+data in the page. Wikipedia's tables are maintained within days of the
+official calendars and are parseable with the standard library.
 
 ## Layout
 
@@ -36,7 +51,7 @@ events than expected it says so and exits without writing.
 - `cities.json`: coordinates per "City, Country" key. Hand fixes stick.
 - `index.html`, `styles.css`, `app.js`: the site. Leaflet from cdnjs, tiles
   from OpenStreetMap. No build step.
-- `seed/wikipedia.py`, `scripts/geocode.py`: the two scripts. Standard library.
+- `seed/wikipedia.py`, `seed/cups.py`, `scripts/geocode.py`, `refresh`: the scripts. Standard library.
 
 ## Hosting
 

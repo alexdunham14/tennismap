@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Rebuild tournaments.json for a season and geocode any new cities.
+#   ./refresh [year]
+set -euo pipefail
+cd "$(dirname "$0")"
+year="${1:-$(date +%Y)}"
+mkdir -p seed/out
+./seed/wikipedia.py "$year" > seed/out/tour.json
+./seed/cups.py "$year" > seed/out/cups.json
+python3 - <<'PY'
+import json
+tour = json.load(open("seed/out/tour.json")); cups = json.load(open("seed/out/cups.json"))
+events = tour["tournaments"] + cups["tournaments"]
+events.sort(key=lambda e: (e["start"], e["tour"], e["name"]))
+json.dump({"season": tour["season"], "generated": tour["generated"], "tournaments": events}, open("tournaments.json", "w"), ensure_ascii=False, indent=0)
+print(f"{len(events)} events written to tournaments.json")
+PY
+./scripts/geocode.py

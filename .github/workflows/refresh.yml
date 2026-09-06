@@ -1,0 +1,25 @@
+name: Monthly refresh and deploy
+on:
+  schedule:
+    - cron: "23 6 1 * *"   # first of the month, 06:23 UTC
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rebuild the calendar from Wikipedia and geocode new cities
+        run: ./refresh
+      - name: Commit if changed
+        run: |
+          git config user.name "tennismap bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add tournaments.json cities.json
+          git diff --cached --quiet || git commit -m "Refresh calendar $(date -u +%F)"
+          git push
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

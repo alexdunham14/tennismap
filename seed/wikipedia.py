@@ -17,12 +17,16 @@ import urllib.request
 from html.parser import HTMLParser
 
 UA = "tennismap/1.0 (github.com/alexdunham14/tennismap)"
-PAGES = [  # (tour, page title, minimum events expected)
+PAGES = [  # (tour, page title, minimum events expected; 0 = page may not exist yet)
     ("ATP", "{y}_ATP_Tour", 60),
     ("WTA", "{y}_WTA_Tour", 50),
     ("ATP", "{y}_ATP_Challenger_Tour", 120),
     ("WTA", "{y}_WTA_125_tournaments", 20),
 ]
+# The ITF World Tennis Tour is split into quarterly sub-articles that appear as the year goes on.
+QUARTERS = ["January%E2%80%93March", "April%E2%80%93June", "July%E2%80%93September", "October%E2%80%93December"]
+PAGES += [("ATP", "{y}_ITF_Men%27s_World_Tennis_Tour_(" + q + ")", 0) for q in QUARTERS]
+PAGES += [("WTA", "{y}_ITF_Women%27s_World_Tennis_Tour_(" + q + ")", 0) for q in QUARTERS]
 MONTHS = {m: i for i, m in enumerate(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], 1)}
 
 
@@ -68,7 +72,7 @@ class Tables(HTMLParser):
 
 
 def clean(s):
-    s = re.sub(r"\[\d+\]", "", s)              # footnotes
+    s = re.sub(r"\[[a-z0-9]+\]", "", s)         # footnotes like [3] or [a]
     return [re.sub(r"\s+", " ", l).strip() for l in s.split("\n") if l.strip()]
 
 
@@ -105,10 +109,14 @@ def parse_page(tour, title, year):
             if len(lines) < 3:
                 continue
             # The place line is the first "City, Country" line; a long name can spill onto two lines.
-            pi = next((i for i, l in enumerate(lines[1:], 1) if re.match(r"^[^,$€£]+, [A-Z]", l) and not re.search(r"\d{3},\d{3}", l)), 1)
+            # ITF rows have no name line at all: the place comes first and the grade (M25, W75) names the event.
+            pi = next((i for i, l in enumerate(lines) if re.match(r"^[^,$€£]+, [A-Z]", l) and not re.search(r"\d{3},\d{3}", l)), 1)
             name = " ".join(lines[:pi])
             place = lines[pi]
             rest = " ".join(lines[pi + 1:])
+            grade = re.search(r"\b([MW]\d{2,3})\b", rest)
+            if not name and grade:
+                name = f"{grade.group(1)} {place.split(',')[0]}"
             surface = next((s for s in ("Hard", "Clay", "Grass", "Carpet") if re.search(r"\b" + s + r"\b", rest)), None)
             if not surface:
                 continue
@@ -118,6 +126,7 @@ def parse_page(tour, title, year):
                 (r"United Cup|Davis Cup|Billie Jean King Cup|Laver Cup|Hopman", "Team"),
                 (r"Masters 1000|ATP 1000|WTA 1000|Masters", "1000"), (r"ATP 500|WTA 500", "500"), (r"ATP 250|WTA 250", "250"),
                 (r"WTA 125|Challenger", "Challenger/125"), (r"Olympic", "Olympics"),
+                (r"\b[MW]\d{2,3}\b", "ITF"),
             ]:
                 if re.search(pat, rest) or re.search(pat, name):
                     cat = label; break
@@ -135,7 +144,8 @@ def parse_page(tour, title, year):
             out.append({
                 "tour": tour, "name": name, "city": city, "country": country, "category": cat, "surface": surface,
                 "start": week.isoformat(), "end": (week + dt.timedelta(days=days)).isoformat(),
-                "prize": prize.group(0) if prize else None, "draw": draw.group(1) + " singles" if draw else None,
+                "prize": prize.group(0) if prize else None, "grade": grade.group(1) if grade else None,
+                "draw": draw.group(1) + " singles" if draw else None,
                 "page": title,
             })
     return out
@@ -149,8 +159,10 @@ def main():
         try:
             got = parse_page(tour, title, year)
         except Exception as ex:  # noqa: BLE001
-            print(f"{title}: failed ({ex})", file=sys.stderr)
-            continue
+            if minimum == 0:
+                print(f"{title}: not available yet ({ex})", file=sys.stderr)
+                continue
+            sys.exit(f"{title}: failed ({ex})")
         print(f"{title}: {len(got)} events", file=sys.stderr)
         if len(got) < minimum:
             sys.exit(f"{title}: only {len(got)} events parsed, expected at least {minimum}; page layout may have changed")
