@@ -61,8 +61,10 @@ an active event months after it was dropped. Two signals catch this:
    the Champions cell. `./scripts/suspects.py` lists events more than two
    weeks past with no result, which is either a cancellation or Wikipedia
    lagging. Those candidates need a check against news or the tournament's
-   own page; confirmed ones go in `cancellations.json` as
-   `{"name", "start", "status", "source", "note"}` and `refresh` applies them.
+   own page; verdicts go in `cancellations.json` as
+   `{"name", "start", "status", "source", "note"}`: `refresh` applies the
+   cancelled ones, and any entry, including verified `played`, stops the
+   sweep from raising that event again.
 
 A third source, found while verifying Durham: the ATP publishes dated
 calendar PDFs (`atptour.com/-/media/files/calendar-pdfs/<year>/...`) whose

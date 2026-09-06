@@ -1,11 +1,37 @@
 [
- {"name": "Durham Challenger", "start": "2026-06-22", "status": "cancelled",
+ {
+  "name": "Durham Challenger",
+  "start": "2026-06-22",
+  "status": "cancelled",
   "source": "https://www.atptour.com/-/media/files/calendar-pdfs/2026/2026-27-atp-challenger-calendar-as-of-18-jun-2026.pdf",
-  "note": "ATP Challenger calendar PDF (as of 18 June 2026) marks week 25 Durham 'Cancelled', Plovdiv 'Added' the same week. Also listed under Cancelled tournaments on Wikipedia's 2026 ATP Challenger Tour page."},
- {"name": "M25 Antalya", "start": "2026-01-19", "status": "cancelled",
+  "note": "ATP Challenger calendar PDF (as of 18 June 2026) marks week 25 Durham 'Cancelled', Plovdiv 'Added' the same week. Also listed under Cancelled tournaments on Wikipedia's 2026 ATP Challenger Tour page."
+ },
+ {
+  "name": "M25 Antalya",
+  "start": "2026-01-19",
+  "status": "cancelled",
   "source": "https://en.wikipedia.org/wiki/2026_ITF_Men%27s_World_Tennis_Tour_(January%E2%80%93March)",
-  "note": "'Singles and doubles competition was cancelled due to ongoing poor weather.'"},
- {"name": "W15 Antalya", "start": "2026-01-19", "status": "cancelled",
+  "note": "'Singles and doubles competition was cancelled due to ongoing poor weather.'"
+ },
+ {
+  "name": "W15 Antalya",
+  "start": "2026-01-19",
+  "status": "cancelled",
   "source": "https://en.wikipedia.org/wiki/2026_ITF_Women%27s_World_Tennis_Tour_(January%E2%80%93March)",
-  "note": "'Singles and doubles competition was cancelled due to ongoing poor weather'; ITF site lists it as 'W15 Antalya (CANCELLED)'."}
+  "note": "'Singles and doubles competition was cancelled due to ongoing poor weather'; ITF site lists it as 'W15 Antalya (CANCELLED)'."
+ },
+ {
+  "name": "M15 Punta del Este",
+  "start": "2026-03-23",
+  "status": "played",
+  "source": "https://www.sofascore.com/es/tennis/tournament/itf-men/itf-m15-punta-del-este-men/32578",
+  "note": "Verified played (Lucio Ratti champion); Wikipedia row has no result."
+ },
+ {
+  "name": "Austrian Open",
+  "start": "2026-07-20",
+  "status": "played",
+  "source": "https://www.atptour.com/en/news/bublik-halys-kitzbuhel-2026-final",
+  "note": "Verified played (Quentin Halys d. Bublik); Wikipedia row lagging."
+ }
 ]
