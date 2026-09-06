@@ -1,0 +1,10 @@
+.git
+.github
+.gitignore
+.assetsignore
+.wrangler
+scripts
+seed
+README.md
+wrangler.jsonc
+__pycache__
