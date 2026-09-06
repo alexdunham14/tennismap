@@ -92,6 +92,5 @@ Run the sweep after each monthly refresh:
 
 ## Hosting
 
-Cloudflare Workers static assets (`wrangler.jsonc`), deployed on push by
-GitHub Actions with the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`
-repository secrets.
+Cloudflare Workers static assets (`wrangler.jsonc`). Deploy by hand with `wrangler deploy` from a checkout. The GitHub Actions deploy was removed on 2026-09-06 because the `CLOUDFLARE_API_TOKEN` secret is not set and every push failed; put it back (cloudflare/wrangler-action with the token and `CLOUDFLARE_ACCOUNT_ID`) once the token exists.
+The monthly refresh workflow commits new data but does not deploy it.

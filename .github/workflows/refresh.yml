@@ -1,4 +1,4 @@
-name: Monthly refresh and deploy
+name: Monthly refresh
 on:
   schedule:
     - cron: "23 6 1 * *"   # first of the month, 06:23 UTC
@@ -19,7 +19,3 @@ jobs:
           git add tournaments.json cities.json
           git diff --cached --quiet || git commit -m "Refresh calendar $(date -u +%F)"
           git push
-      - uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
