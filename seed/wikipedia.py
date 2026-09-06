@@ -157,7 +157,7 @@ def parse_page(tour, title, year):
                 "prize": prize.group(0) if prize else None, "grade": grade.group(1) if grade else None,
                 "draw": draw.group(1) + " singles" if draw else None,
                 "cancelled": cancelled_table,
-                "played": None if cancelled_table or champ_i is None else bool(re.search(r"\d–\d|w/o|walkover", champ)),
+                "played": None if cancelled_table or champ_i is None else bool(re.search(r"\d–\d|w/o|walkover|ret\.", champ, re.I)),
                 "page": title,
             })
     return out

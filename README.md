@@ -64,6 +64,16 @@ an active event months after it was dropped. Two signals catch this:
    own page; confirmed ones go in `cancellations.json` as
    `{"name", "start", "status", "source", "note"}` and `refresh` applies them.
 
+A third source, found while verifying Durham: the ATP publishes dated
+calendar PDFs (`atptour.com/-/media/files/calendar-pdfs/<year>/...`) whose
+Challenger edition marks weeks "Cancelled" and "Added". The 18 June 2026
+revision shows Durham cancelled and Plovdiv added in its place, while the
+February revision still listed Durham. That is first-party and readable with
+`pdftotext`, so it is the natural next automation if the sweep keeps finding
+Challenger changes. The first sweep (September 2026) checked eleven suspects:
+three real cancellations (Durham, and the M25 and W15 Antalya weeks of 19
+January, lost to weather), eight Wikipedia lag or walkover formatting.
+
 Run the sweep after each monthly refresh:
 
 ```

@@ -910,9 +910,10 @@
 "prize": null,
 "grade": "M25",
 "draw": null,
-"cancelled": false,
+"cancelled": true,
 "played": false,
-"page": "2026_ITF_Men%27s_World_Tennis_Tour_(January%E2%80%93March)"
+"page": "2026_ITF_Men%27s_World_Tennis_Tour_(January%E2%80%93March)",
+"cancellation_source": "https://en.wikipedia.org/wiki/2026_ITF_Men%27s_World_Tennis_Tour_(January%E2%80%93March)"
 },
 {
 "tour": "ATP",
@@ -1006,9 +1007,10 @@
 "prize": null,
 "grade": "W15",
 "draw": null,
-"cancelled": false,
+"cancelled": true,
 "played": false,
-"page": "2026_ITF_Women%27s_World_Tennis_Tour_(January%E2%80%93March)"
+"page": "2026_ITF_Women%27s_World_Tennis_Tour_(January%E2%80%93March)",
+"cancellation_source": "https://en.wikipedia.org/wiki/2026_ITF_Women%27s_World_Tennis_Tour_(January%E2%80%93March)"
 },
 {
 "tour": "WTA",
@@ -3496,7 +3498,7 @@
 "grade": null,
 "draw": "32 singles",
 "cancelled": false,
-"played": false,
+"played": true,
 "page": "2026_ATP_Tour"
 },
 {
@@ -6312,7 +6314,7 @@
 "grade": "M25",
 "draw": null,
 "cancelled": false,
-"played": false,
+"played": true,
 "page": "2026_ITF_Men%27s_World_Tennis_Tour_(April%E2%80%93June)"
 },
 {
@@ -6833,7 +6835,7 @@
 "grade": "M15",
 "draw": null,
 "cancelled": false,
-"played": false,
+"played": true,
 "page": "2026_ITF_Men%27s_World_Tennis_Tour_(April%E2%80%93June)"
 },
 {
@@ -7297,7 +7299,7 @@
 "grade": "M15",
 "draw": null,
 "cancelled": false,
-"played": false,
+"played": true,
 "page": "2026_ITF_Men%27s_World_Tennis_Tour_(April%E2%80%93June)"
 },
 {
@@ -7313,7 +7315,7 @@
 "grade": "M15",
 "draw": null,
 "cancelled": false,
-"played": false,
+"played": true,
 "page": "2026_ITF_Men%27s_World_Tennis_Tour_(April%E2%80%93June)"
 },
 {
@@ -11041,7 +11043,7 @@
 "grade": null,
 "draw": "32 singles",
 "cancelled": false,
-"played": false,
+"played": true,
 "page": "2026_ATP_Challenger_Tour"
 },
 {
@@ -11825,7 +11827,7 @@
 "grade": null,
 "draw": "32 singles",
 "cancelled": false,
-"played": false,
+"played": true,
 "page": "2026_WTA_Tour"
 },
 {
@@ -12834,7 +12836,8 @@
 "draw": null,
 "cancelled": true,
 "played": null,
-"page": "2026_ATP_Challenger_Tour"
+"page": "2026_ATP_Challenger_Tour",
+"cancellation_source": "https://www.atptour.com/-/media/files/calendar-pdfs/2026/2026-27-atp-challenger-calendar-as-of-18-jun-2026.pdf"
 },
 {
 "tour": "ATP",
