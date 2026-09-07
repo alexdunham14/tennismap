@@ -66,7 +66,7 @@
   const prize = r => [...new Set(r.parts.map(p => p.prize).filter(Boolean))].join(" / ");
   const whoOf = tours => tours.length === 2 ? "both" : tours[0] === "ATP" ? "men" : "women";
   const who = r => ({ both: "men & women", men: "men", women: "women" })[whoOf(r.tours)];
-  const tag = r => `${who(r)} · ${level(r)} · ${r.surface || "surface TBC"}`;
+  const tag = r => `${who(r)}, ${level(r)}, ${r.surface || "surface TBC"}`;
   const seasonFrom = events[0].start, seasonTo = events.reduce((m, e) => e.end > m ? e.end : m, "");
 
   // ---- Dates -------------------------------------------------------------------------
@@ -198,7 +198,7 @@
       const tours = [...new Set(list.flatMap(e => e.tours))];
       const base = RADIUS[best], radius = base + grow();
       const marker = L.circleMarker([c.lat, c.lon], { radius, color: "#333", weight: 1, fillColor: COLOR[whoOf(tours)], fillOpacity: .85 }).addTo(layer)
-        .bindPopup(`<div class="pop"><b>${esc(k)}</b>${list.map(e => `${fmt(e.start)}–${fmt(e.end)} · ${esc(e.name)} <span class="tag">${esc(tag(e))}</span>`).join("<br>")}</div>`, { maxWidth: 340 });
+        .bindPopup(`<div class="pop"><b>${esc(k)}</b>${list.map(e => `${fmt(e.start)}–${fmt(e.end)}, ${esc(e.name)} <span class="tag">${esc(tag(e))}</span>`).join("<br>")}</div>`, { maxWidth: 340 });
       dots.push({ marker, base, radius, label: list[0].city, rank: CATS.indexOf(best) });
     }
     placeLabels();
