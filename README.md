@@ -57,6 +57,15 @@ plain HTTP clients, and the cup sites render their draws client-side with no
 data in the page. Wikipedia's tables are maintained within days of the
 official calendars and are parseable with the standard library.
 
+One consequence: the tour calendars are published for the whole year and
+transcribed up front, but the quarterly ITF pages are filled in week by week
+as events are played (checked again 2026-09-07: the July to September pages
+stop at the current week and the October to December pages do not exist
+yet). So ITF events show a week or two ahead at most, the page says so, and
+the monthly refresh catches them up. Closing that gap would need a browser
+that can pass itftennis.com's Incapsula challenge, which the stdlib-only rule
+rules out for now.
+
 ## Cancellations
 
 Tournaments get announced and then cancelled, and the official sites are slow
