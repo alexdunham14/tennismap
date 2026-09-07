@@ -7,10 +7,20 @@ year="${1:-$(date +%Y)}"
 mkdir -p seed/out
 ./seed/wikipedia.py "$year" > seed/out/tour.json
 ./seed/cups.py "$year" > seed/out/cups.json
+# Upcoming ITF events from itftennis.com (needs a Chrome; exit 3 means none found, carry on without).
+if ./seed/itf.py > seed/out/itf.json.tmp; then mv seed/out/itf.json.tmp seed/out/itf.json; else rm -f seed/out/itf.json.tmp; fi
 python3 - <<'PY'
-import json
+import json, os, unicodedata
 tour = json.load(open("seed/out/tour.json")); cups = json.load(open("seed/out/cups.json"))
 events = tour["tournaments"] + cups["tournaments"]
+# Wikipedia's ITF pages only cover played weeks; add the weeks ahead from itftennis.com, Wikipedia winning where both have a row.
+if os.path.exists("seed/out/itf.json"):
+    # same tour, week, grade, and the first letters of the city: the two sites spell cities differently (Sharm El Sheikh / Sharm ElSheikh)
+    key = lambda e: (e["tour"], e["start"], e["grade"], unicodedata.normalize("NFD", e["city"]).encode("ascii", "ignore").decode().lower().replace(" ", "")[:5])
+    have = {key(e) for e in events if e["category"] == "ITF"}
+    added = [e for e in json.load(open("seed/out/itf.json"))["tournaments"] if key(e) not in have]
+    events += added
+    print(f"{len(added)} upcoming ITF events added from itftennis.com")
 # Verified cancellations found by the sweep (scripts/suspects.py + a human or agent check).
 overrides = {(c["name"], c["start"]): c for c in json.load(open("cancellations.json"))}
 for e in events:

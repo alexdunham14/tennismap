@@ -28,7 +28,7 @@
     "500": "the middle rung of the main tours",
     "250": "the entry level of the main ATP and WTA tours",
     "Challenger/125": "the tier below the tours, where players ranked roughly 80 to 300 earn their points",
-    ITF: "the entry level of professional tennis; the number is the prize money in thousands of dollars. Wikipedia lists these a week or two ahead at most, so the map thins out beyond that",
+    ITF: "the entry level of professional tennis; the number is the prize money in thousands of dollars",
     Team: "Davis Cup and Billie Jean King Cup ties, the United Cup, the Laver Cup",
     Olympics: "the Olympic tournament",
     Other: "everything else",
@@ -205,7 +205,7 @@
       <h2>Week of ${fmtDay(w)}</h2>
       <table>${byWeek.get(w).sort((a, b) => CATS.indexOf(top(a)) - CATS.indexOf(top(b)) || a.name.localeCompare(b.name)).map(e => `
         <tr><td class="when">${fmt(e.start)}–${fmt(e.end)}</td>
-            <td>${esc(e.name)} <span class="tag">${esc(tag(e))}${prize(e) ? ", " + esc(prize(e)) : ""}${e.venue ? ", " + esc(e.venue) : ""}</span></td>
+            <td>${e.link ? `<a href="${esc(e.link)}" rel="noopener">${esc(e.name)}</a>` : esc(e.name)} <span class="tag">${esc(tag(e))}${prize(e) ? ", " + esc(prize(e)) : ""}${e.venue ? ", " + esc(e.venue) : ""}</span></td>
             <td class="city">${cities[key(e)] && cities[key(e)].lat != null ? `<a href="#map" data-city="${esc(key(e))}">${esc(key(e))}</a>` : esc(key(e))}</td></tr>`).join("")}
       </table>`).join("") : '<p class="none">No tournaments match. Widen the dates or clear a filter.</p>';
     const from = $("from").value, to = $("to").value;
@@ -221,6 +221,7 @@
   });
   for (const el of document.querySelectorAll("#f input:not([type=date]), #f select")) el.addEventListener(el.id === "q" ? "input" : "change", render);
   const itfTo = events.filter(e => e.cats.includes("ITF")).reduce((m, e) => e.end > m ? e.end : m, "");
-  $("meta").textContent = `${data.season} season, ${events.length} tournaments and ties (combined men's and women's events counted once)${cancelled.length ? `, plus ${cancelled.length} announced and then cancelled (${cancelled.map(e => e.name).join(", ")}), not shown` : ""}, from Wikipedia's ${data.season} ATP Tour, WTA Tour, ATP Challenger Tour, WTA 125, ITF World Tennis Tour, Davis Cup, and Billie Jean King Cup pages, read on ${data.generated}. The tour calendars are published for the whole year; the ITF pages are filled in week by week, so ITF events only show a week or two ahead${itfTo ? ` (currently to ${fmt(itfTo)})` : ""}.`;
+  const itfLinked = events.filter(e => e.link).length;
+  $("meta").textContent = `${data.season} season, ${events.length} tournaments and ties (combined men's and women's events counted once)${cancelled.length ? `, plus ${cancelled.length} announced and then cancelled (${cancelled.map(e => e.name).join(", ")}), not shown` : ""}, from Wikipedia's ${data.season} ATP Tour, WTA Tour, ATP Challenger Tour, WTA 125, ITF World Tennis Tour, Davis Cup, and Billie Jean King Cup pages, read on ${data.generated}. The tour calendars are published for the whole year; Wikipedia's ITF pages are filled in week by week, so the weeks ahead${itfTo ? ` (to ${fmt(itfTo)})` : ""} come from itftennis.com's own calendar${itfLinked ? `, ${itfLinked} events, each linked` : ""}.`;
   render();
 })();

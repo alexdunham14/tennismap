@@ -59,12 +59,17 @@ official calendars and are parseable with the standard library.
 
 One consequence: the tour calendars are published for the whole year and
 transcribed up front, but the quarterly ITF pages are filled in week by week
-as events are played (checked again 2026-09-07: the July to September pages
-stop at the current week and the October to December pages do not exist
-yet). So ITF events show a week or two ahead at most, the page says so, and
-the monthly refresh catches them up. Closing that gap would need a browser
-that can pass itftennis.com's Incapsula challenge, which the stdlib-only rule
-rules out for now.
+as events are played, so on their own they never show more than a week or
+two ahead. `seed/itf.py` fills the weeks ahead from itftennis.com's own
+calendar API. The site sits behind an Incapsula JavaScript challenge, so the
+script starts a headless Chrome, opens the calendar page (which passes the
+challenge), and asks the page to call the API over the DevTools protocol; the
+Python side is standard library, Chrome is the one outside dependency (set
+`ITF_CHROME`, or it finds a Playwright chromium or google-chrome). Without a
+Chrome it exits 3 and `refresh` carries on without the lookahead. `refresh`
+adds the itftennis.com rows that Wikipedia does not already have (same tour,
+week, grade, and start of the city name), so played weeks keep Wikipedia's
+row and results. Each row from itftennis.com carries a `link` to its page.
 
 ## Cancellations
 
