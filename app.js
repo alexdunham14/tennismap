@@ -22,14 +22,14 @@
   const LABEL = { "Challenger/125": "Challenger / WTA 125", ITF: "ITF World Tennis Tour", Team: "Team events (Davis Cup, BJK Cup, United Cup)" };
   const SHORT = { "Challenger/125": "Challenger / 125", ITF: "ITF", Team: "team" };
   const ABOUT = {
-    "Grand Slam": "the four majors, two weeks each",
-    Finals: "the season-ending championships for the top eight",
-    "1000": "the biggest regular tour events, most of them men and women together",
-    "500": "the middle rung of the main tours",
-    "250": "the entry level of the main ATP and WTA tours",
-    "Challenger/125": "the tier below the tours, where players ranked roughly 80 to 300 earn their points",
-    ITF: "the entry level of professional tennis; the number is the prize money in thousands of dollars",
-    Team: "Davis Cup and Billie Jean King Cup ties, the United Cup, the Laver Cup",
+    "Grand Slam": "the four majors",
+    Finals: "the season-ending championships for the top eight players",
+    "1000": "the highest tier of ATP/WTA tour events",
+    "500": "the middle tier of ATP/WTA tour events",
+    "250": "the lower tier of ATP/WTA tour events",
+    "Challenger/125": "a tier below the \"tour\", but not in any sense the \"minor leagues\", as the points earned here count towards your ranking in the same way as higher-tier tournaments",
+    ITF: "the entry level of professional tennis; the number next to W/M reflects the total prize money pool at the tournament",
+    Team: "International team events: Davis Cup and Billie Jean King Cup ties, the United Cup, the Laver Cup",
     Olympics: "the Olympic tournament",
     Other: "everything else",
   };
