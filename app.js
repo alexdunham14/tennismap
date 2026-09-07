@@ -18,7 +18,7 @@
   const TOUR = ["Grand Slam", "Finals", "1000", "500", "250"];
   // Colour says who plays; size says the level. One rule each, so the map reads at a glance.
   const COLOR = { men: "#3b6ea5", women: "#c0562a", both: "#7a5c99" };
-  const RADIUS = { "Grand Slam": 13, Finals: 11, "1000": 10, "500": 8, "250": 6.5, Olympics: 10, Team: 6.5, "Challenger/125": 5, ITF: 3.5, Other: 5 };
+  const RADIUS = { "Grand Slam": 13, Finals: 11, "1000": 10, "500": 8, "250": 6.5, Olympics: 10, Team: 6.5, "Challenger/125": 5.5, ITF: 4, Other: 5.5 };
   const LABEL = { "Challenger/125": "Challenger / WTA 125", ITF: "ITF World Tennis Tour", Team: "Team events (Davis Cup, BJK Cup, United Cup)" };
   const SHORT = { "Challenger/125": "Challenger / 125", ITF: "ITF", Team: "team" };
   const ABOUT = {
@@ -66,7 +66,7 @@
   const prize = r => [...new Set(r.parts.map(p => p.prize).filter(Boolean))].join(" / ");
   const whoOf = tours => tours.length === 2 ? "both" : tours[0] === "ATP" ? "men" : "women";
   const who = r => ({ both: "men & women", men: "men", women: "women" })[whoOf(r.tours)];
-  const tag = r => `${who(r)} · ${level(r)} · ${r.surface || "surface TBC"}`;
+  const tag = r => `${who(r)} · ${level(r)} · ${r.surface || "surface TBC"}`;
   const seasonFrom = events[0].start, seasonTo = events.reduce((m, e) => e.end > m ? e.end : m, "");
 
   // ---- Dates -------------------------------------------------------------------------
@@ -131,13 +131,17 @@
 
   const sizeKey = ["Grand Slam", "1000", "500", "250", "Challenger/125", "ITF"];
   $("legend").innerHTML = `<span><i class="dot men"></i>men</span><span><i class="dot women"></i>women</span><span><i class="dot both"></i>men &amp; women</span>`
-    + `<span class="sizes">size is the level: ${sizeKey.map(c => `<i style="width:${RADIUS[c] * 1.4}px;height:${RADIUS[c] * 1.4}px"></i>${esc(SHORT[c] || c)}`).join(" ")}</span><span>click a dot for the list</span>`;
+    + `<span class="key">size is the level:</span>` + sizeKey.map(c => `<span><i class="size" style="width:${RADIUS[c] * 1.4}px;height:${RADIUS[c] * 1.4}px"></i>${esc(SHORT[c] || c)}</span>`).join("") + `<span class="key">click a dot for the list</span>`;
 
   // ---- Map ---------------------------------------------------------------------------
   const map = L.map("map", { worldCopyJump: true }).setView([30, 10], 2);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: "&copy; OpenStreetMap contributors" }).addTo(map);
   const layer = L.layerGroup().addTo(map);
-  let dots = [];  // { marker, radius, label, rank }
+  let dots = [];  // { marker, base, radius, label, rank }
+  // Dots grow as the map zooms in (the same amount for every level, so the small ones gain the most),
+  // else the ITF dots vanish into the tiles once a country fills the screen.
+  const grow = () => Math.min(7, Math.max(0, map.getZoom() - 2) * .9);
+  map.on("zoomend", () => { const g = grow(); for (const d of dots) { d.radius = d.base + g; d.marker.setRadius(d.radius); } });
 
   // Label a dot with its city where there is room: biggest dots first, a label goes to the
   // right of its dot, else left, above, or below, wherever the box overlaps no other label or dot.
@@ -192,10 +196,10 @@
       if (!c || c.lat == null) { unplaced += list.length; continue; }
       const best = CATS.find(cat => list.some(e => e.cats.includes(cat))) || "Other";
       const tours = [...new Set(list.flatMap(e => e.tours))];
-      const radius = RADIUS[best];
-      const marker = L.circleMarker([c.lat, c.lon], { radius, color: "#333", weight: radius < 5 ? .5 : 1, fillColor: COLOR[whoOf(tours)], fillOpacity: .85 }).addTo(layer)
-        .bindPopup(`<div class="pop"><b>${esc(k)}</b>${list.map(e => `${fmt(e.start)}–${fmt(e.end)} · ${esc(e.name)} <span class="tag">${esc(tag(e))}</span>`).join("<br>")}</div>`, { maxWidth: 340 });
-      dots.push({ marker, radius, label: list[0].city, rank: CATS.indexOf(best) });
+      const base = RADIUS[best], radius = base + grow();
+      const marker = L.circleMarker([c.lat, c.lon], { radius, color: "#333", weight: 1, fillColor: COLOR[whoOf(tours)], fillOpacity: .85 }).addTo(layer)
+        .bindPopup(`<div class="pop"><b>${esc(k)}</b>${list.map(e => `${fmt(e.start)}–${fmt(e.end)} · ${esc(e.name)} <span class="tag">${esc(tag(e))}</span>`).join("<br>")}</div>`, { maxWidth: 340 });
+      dots.push({ marker, base, radius, label: list[0].city, rank: CATS.indexOf(best) });
     }
     placeLabels();
 
