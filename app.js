@@ -134,7 +134,7 @@
     + `<span class="sizes">size is the level: ${sizeKey.map(c => `<i style="width:${RADIUS[c] * 1.4}px;height:${RADIUS[c] * 1.4}px"></i>${esc(SHORT[c] || c)}`).join(" ")}</span><span>click a dot for the list</span>`;
 
   // ---- Map ---------------------------------------------------------------------------
-  const map = L.map("map", { scrollWheelZoom: false, worldCopyJump: true }).setView([30, 10], 2);
+  const map = L.map("map", { worldCopyJump: true }).setView([30, 10], 2);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: "&copy; OpenStreetMap contributors" }).addTo(map);
   const layer = L.layerGroup().addTo(map);
   let dots = [];  // { marker, radius, label, rank }
