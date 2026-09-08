@@ -44,9 +44,11 @@ tournament, city, or country; the URL carries every filter (`from`, `to`,
 ./refresh 2027     # a new season, once its Wikipedia pages exist
 ```
 
-`refresh` runs both seeds, merges them into `tournaments.json`, and geocodes
-any city not yet in `cities.json`. A GitHub Actions workflow runs it on the
-first of every month and deploys. `seed/wikipedia.py` parses the schedule
+`refresh` runs all three seeds, merges them into `tournaments.json`, and
+geocodes any city not yet in `cities.json`. A GitHub Actions workflow runs it
+on the first of every month and commits the result; deploying is a `wrangler
+deploy` by hand afterwards. The runner needs a Chrome for the ITF lookahead
+below; `ubuntu-latest` ships `google-chrome`, which `seed/itf.py` finds. `seed/wikipedia.py` parses the schedule
 tables of the `<year> ATP Tour`, `WTA Tour`, `ATP Challenger Tour`, `WTA 125
 tournaments`, and the quarterly `ITF Men's/Women's World Tennis Tour` pages;
 `seed/cups.py` parses the tie tables of the `<year> Davis Cup` and `Billie
@@ -54,10 +56,12 @@ Jean King Cup` pages. Wikipedia reorganises tables occasionally; if a parse
 finds fewer events than expected it says so and exits without writing.
 
 The official ITF, Davis Cup, and Billie Jean King Cup sites were checked and
-rejected as sources: itftennis.com sits behind bot protection that blocks
-plain HTTP clients, and the cup sites render their draws client-side with no
-data in the page. Wikipedia's tables are maintained within days of the
-official calendars and are parseable with the standard library.
+rejected as the primary source: itftennis.com sits behind bot protection that
+blocks plain HTTP clients, and the cup sites render their draws client-side
+with no data in the page. Wikipedia's tables are maintained within days of the
+official calendars and are parseable with the standard library. (itftennis.com
+is reached after all, but only for the weeks ahead and only through a real
+browser: see `seed/itf.py` below.)
 
 One consequence: the tour calendars are published for the whole year and
 transcribed up front, but the quarterly ITF pages are filled in week by week

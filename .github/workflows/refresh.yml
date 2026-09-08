@@ -10,7 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Rebuild the calendar from Wikipedia and geocode new cities
+      # google-chrome is preinstalled on ubuntu-latest; seed/itf.py needs it for
+      # the ITF lookahead and exits 3 (refresh carries on) if it is missing.
+      - name: Rebuild the calendar from Wikipedia and itftennis.com, geocode new cities
         run: ./refresh
       - name: Commit if changed
         run: |
