@@ -51,9 +51,8 @@ summary { cursor: pointer; color: #555; }
 .pop { font: .9rem/1.35 Georgia, serif; }
 .pop b { display: block; margin-bottom: .2rem; }
 .none { color: #666; }
-#meta { color: #666; font-size: .9rem; }
 @media (prefers-color-scheme: dark) {
-  td.when, .tag, #meta, .none, summary, .legend, .rowlabel { color: #999; }
+  td.when, .tag, .none, summary, .legend, .rowlabel { color: #999; }
   h2 { border-color: #444; } form { border-color: #333; } form .row + .row { border-color: #2a2a2a; } #map { background: #222; }
   button.clear, .nudge button { border-color: #555; }
 }

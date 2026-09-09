@@ -87,8 +87,8 @@ an active event months after it was dropped. Two signals catch this:
    has one ("The following tournaments were formally announced by the ATP
    before being cancelled"). The seed reads any table under a heading
    containing "Cancel" and marks those events `cancelled`, which the site
-   hides and names in its footer line. The ATP, WTA, WTA 125, and ITF pages
-   had no such section in 2026; the seed handles one if it appears.
+   hides. The ATP, WTA, WTA 125, and ITF pages had no such section in 2026;
+   the seed handles one if it appears.
 2. **A past event with no champion recorded.** The seed records `played` from
    the Champions cell. `./scripts/suspects.py` lists events more than two
    weeks past with no result, which is either a cancellation or Wikipedia

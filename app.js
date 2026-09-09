@@ -4,7 +4,6 @@
     fetch("tournaments.json", { cache: "no-cache" }).then(r => r.json()),
     fetch("cities.json", { cache: "no-cache" }).then(r => r.json()),
   ]);
-  const cancelled = data.tournaments.filter(e => e.cancelled);
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const fold = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
   const local = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
@@ -224,8 +223,5 @@
     layer.eachLayer(m => { const ll = m.getLatLng(); if (ll.lat === c.lat && ll.lng === c.lon) m.openPopup(); });
   });
   for (const el of document.querySelectorAll("#f input:not([type=date]), #f select")) el.addEventListener(el.id === "q" ? "input" : "change", render);
-  const itfTo = events.filter(e => e.cats.includes("ITF")).reduce((m, e) => e.end > m ? e.end : m, "");
-  const itfLinked = events.filter(e => e.link).length;
-  $("meta").textContent = `${data.season} season, ${events.length} tournaments and ties (combined men's and women's events counted once)${cancelled.length ? `, plus ${cancelled.length} announced and then cancelled (${cancelled.map(e => e.name).join(", ")}), not shown` : ""}, from Wikipedia's ${data.season} ATP Tour, WTA Tour, ATP Challenger Tour, WTA 125, ITF World Tennis Tour, Davis Cup, and Billie Jean King Cup pages, read on ${data.generated}. The tour calendars are published for the whole year; Wikipedia's ITF pages are filled in week by week, so the weeks ahead${itfTo ? ` (to ${fmt(itfTo)})` : ""} come from itftennis.com's own calendar${itfLinked ? `, ${itfLinked} events, each linked` : ""}.`;
   render();
 })();
