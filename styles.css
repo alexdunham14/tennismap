@@ -33,6 +33,7 @@ details { margin: 0 0 .75rem; font-size: .95rem; }
 summary { cursor: pointer; color: #555; }
 .pyramid { margin: .3rem 0 0; padding-left: 1.4rem; }
 .pyramid li { margin: .15rem 0; }
+.beside-note { margin: .6rem 0 0; }
 
 /* Legend: three colours (who plays), dot size for the level. */
 .legend { display: flex; flex-wrap: wrap; gap: .25rem 1rem; margin: 0 0 1rem; font-size: .85rem; color: #555; }

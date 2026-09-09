@@ -17,7 +17,11 @@
   const TOUR = ["Grand Slam", "Finals", "1000", "500", "250"];
   // Colour says who plays; size says the level. One rule each, so the map reads at a glance.
   const COLOR = { men: "#3b6ea5", women: "#c0562a", both: "#7a5c99" };
-  const RADIUS = { "Grand Slam": 13, Finals: 11, "1000": 10, "500": 8, "250": 6.5, Olympics: 10, Team: 6.5, "Challenger/125": 5.5, ITF: 4, Other: 5.5 };
+  const RADIUS = { "Grand Slam": 13, Finals: 11, "1000": 10, "500": 8, "250": 6.5, Olympics: 10, Team: 8, "Challenger/125": 5.5, ITF: 4, Other: 5.5 };
+  // The seven rungs of the ranking ladder, in order. Team events, the Olympics and
+  // anything unclassified sit beside it, not under it, so they are listed separately.
+  const LADDER = ["Grand Slam", "Finals", "1000", "500", "250", "Challenger/125", "ITF"];
+  const BESIDE = ["Team", "Olympics", "Other"];
   const LABEL = { "Challenger/125": "Challenger / WTA 125", ITF: "ITF World Tennis Tour", Team: "Team events (Davis Cup, BJK Cup, United Cup)" };
   const SHORT = { "Challenger/125": "Challenger / 125", ITF: "ITF", Team: "team" };
   const ABOUT = {
@@ -121,22 +125,27 @@
   const n = c => events.filter(e => e.cats.includes(c)).length;
   const parts = events.flatMap(e => e.parts);
   const grades = [...new Set(parts.filter(p => p.grade).map(p => p.grade))].sort((a, b) => a[0].localeCompare(b[0]) || parseInt(a.slice(1)) - parseInt(b.slice(1)));
-  $("pyramid").innerHTML = CATS.filter(c => n(c)).map(c => `
-    <li><a href="#" data-cat="${esc(c)}">${esc(LABEL[c] || c)}</a> <span class="tag">${n(c)}</span>: ${esc(ABOUT[c])}${c === "ITF" ? ` (${grades.map(g => `${g} ${parts.filter(p => p.grade === g).length}`).join(", ")})` : ""}.</li>`).join("");
-  $("pyramid").addEventListener("click", ev => {
+  const rung = c => `
+    <li><a href="#" data-cat="${esc(c)}">${esc(LABEL[c] || c)}</a> <span class="tag">${n(c)}</span>: ${esc(ABOUT[c])}${c === "ITF" ? ` (${grades.map(g => `${g} ${parts.filter(p => p.grade === g).length}`).join(", ")})` : ""}.</li>`;
+  $("pyramid").innerHTML = LADDER.filter(n).map(rung).join("");
+  $("beside").innerHTML = BESIDE.filter(n).map(rung).join("");
+  $("beside-note").hidden = !BESIDE.some(n);
+  for (const el of [$("pyramid"), $("beside")]) el.addEventListener("click", ev => {
     const a = ev.target.closest("a[data-cat]"); if (!a) return;
     ev.preventDefault(); $("cat").value = a.dataset.cat; render();
   });
 
-  const sizeKey = ["Grand Slam", "1000", "500", "250", "Challenger/125", "ITF"];
+  // One swatch per size, so a team event sharing the 500 size shares its swatch
+  // rather than repeating it.
+  const sizeKey = [["Grand Slam"], ["1000"], ["500", "500 / team"], ["250"], ["Challenger/125"], ["ITF"]];
   $("legend").innerHTML = `<span><i class="dot men"></i>men</span><span><i class="dot women"></i>women</span><span><i class="dot both"></i>men &amp; women</span>`
-    + `<span class="key">size is the level:</span>` + sizeKey.map(c => `<span><i class="size" style="width:${RADIUS[c] * 1.4}px;height:${RADIUS[c] * 1.4}px"></i>${esc(SHORT[c] || c)}</span>`).join("") + `<span class="key">click a dot for the list</span>`;
+    + `<span class="key">size is the level:</span>` + sizeKey.map(([c, label]) => `<span><i class="size" style="width:${RADIUS[c] * 1.4}px;height:${RADIUS[c] * 1.4}px"></i>${esc(label || SHORT[c] || c)}</span>`).join("") + `<span class="key">click a dot for the list</span>`;
 
   // ---- Map ---------------------------------------------------------------------------
   const map = L.map("map", { worldCopyJump: true }).setView([30, 10], 2);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: "&copy; OpenStreetMap contributors" }).addTo(map);
   const layer = L.layerGroup().addTo(map);
-  let dots = [];  // { marker, base, radius, label, rank }
+  let dots = [];  // { marker, base, radius, label }
   // Dots grow as the map zooms in (the same amount for every level, so the small ones gain the most),
   // else the ITF dots vanish into the tiles once a country fills the screen.
   const grow = () => Math.min(7, Math.max(0, map.getZoom() - 2) * .9);
@@ -149,7 +158,7 @@
     const hit = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
     const pts = dots.map(d => ({ d, pt: map.latLngToContainerPoint(d.marker.getLatLng()) }));
     for (const { d, pt } of pts) taken.push({ x: pt.x - d.radius, y: pt.y - d.radius, w: 2 * d.radius, h: 2 * d.radius });
-    const ordered = pts.slice().sort((a, b) => a.d.rank - b.d.rank || b.d.radius - a.d.radius);
+    const ordered = pts.slice().sort((a, b) => b.d.base - a.d.base);
     for (const { d, pt } of ordered) {
       d.marker.unbindTooltip();
       if (pt.x < -20 || pt.y < -20 || pt.x > size.x + 20 || pt.y > size.y + 20) continue;
@@ -193,12 +202,13 @@
     for (const [k, list] of byCity) {
       const c = cities[k];
       if (!c || c.lat == null) { unplaced += list.length; continue; }
-      const best = CATS.find(cat => list.some(e => e.cats.includes(cat))) || "Other";
+      const best = CATS.filter(cat => list.some(e => e.cats.includes(cat)))
+        .sort((a, b) => RADIUS[b] - RADIUS[a])[0] || "Other";
       const tours = [...new Set(list.flatMap(e => e.tours))];
       const base = RADIUS[best], radius = base + grow();
       const marker = L.circleMarker([c.lat, c.lon], { radius, color: "#333", weight: 1, fillColor: COLOR[whoOf(tours)], fillOpacity: .85 }).addTo(layer)
         .bindPopup(`<div class="pop"><b>${esc(k)}</b>${list.map(e => `${fmt(e.start)}–${fmt(e.end)}, ${esc(e.name)} <span class="tag">${esc(tag(e))}</span>`).join("<br>")}</div>`, { maxWidth: 340 });
-      dots.push({ marker, base, radius, label: list[0].city, rank: CATS.indexOf(best) });
+      dots.push({ marker, base, radius, label: list[0].city });
     }
     placeLabels();
 

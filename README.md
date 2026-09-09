@@ -9,10 +9,10 @@ that is how you plan a trip, and exact venues are often not even known.
 
 ## Definition of done
 
-- A static page: map with a point per city, sized by number of events in the
-  selected range, and a plain list by week underneath. Filters for date range,
-  men's/women's, level (Grand Slam, 1000, 500, 250, Challenger and WTA 125,
-  ITF, team events), and surface.
+- A static page: map with a point per city, sized by the highest level of event
+  that city holds in the selected range, and a plain list by week underneath.
+  Filters for date range, men's/women's, level (Grand Slam, 1000, 500, 250,
+  Challenger and WTA 125, ITF, team events), and surface.
 - Three tiers of data, each with its own seed script:
   1. ATP, WTA, ATP Challenger, WTA 125: Wikipedia's yearly tour pages, once a season.
   2. ITF World Tennis Tour, men's and women's: about 1,200 events a year,
@@ -32,7 +32,10 @@ and 500) come once from each tour's Wikipedia page and are shown once, tagged
 "men & women", merged at display time by name, country, city, and overlapping
 or back-to-back dates. The "How the levels fit together" block is generated
 from the data with a count per level and per ITF grade; clicking a level sets
-the filter. Weeks are grouped by the Monday of the start date, so a Davis Cup
+the filter. Only the seven rungs of the ranking ladder are numbered there. Team
+events, the Olympics and anything unclassified are listed separately underneath,
+because numbering them continued the ladder and put a Davis Cup tie below an
+M15. They are drawn at the 500 size on the map. Weeks are grouped by the Monday of the start date, so a Davis Cup
 tie played Friday to Sunday lists under its week. The search box matches
 tournament, city, or country; the URL carries every filter (`from`, `to`,
 `tour`, `cat`, `surface`, `q`).
