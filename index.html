@@ -7,43 +7,47 @@
 <meta name="description" content="Every professional tennis tournament of the season on a map, filterable by tour, level, surface, and date.">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:,">
 </head>
 <body>
-<h1>Tennis Map</h1>
-<p>A map of pro tennis tournaments, filterable by date and competition tier.</p>
+<h1><a href="./">Tennis Map</a></h1>
+<p class="lede">A map of pro tennis tournaments, filterable by date and competition tier.</p>
 
 <noscript><p>The map and the list need JavaScript. The data is in <a href="tournaments.json">tournaments.json</a>.</p></noscript>
-<form id="f" onsubmit="return false">
-  <div class="row">
-    <span class="rowlabel">dates</span>
-    <div class="ctl">
+<form id="f" class="panel" onsubmit="return false">
+  <div class="opts">
+    <div class="group dates" role="group" aria-label="Dates">
+      <span class="lbl">Dates</span>
       <label>from <input id="from" type="date"></label>
       <label>to <input id="to" type="date"></label>
-      <span class="nudge"><button type="button" id="earlier" title="Shift the range back by its own length">&lsaquo; earlier</button> <button type="button" id="later" title="Shift the range forward by its own length">later &rsaquo;</button></span>
-      <button type="button" id="clear-dates" class="clear" title="Show the whole season">clear</button>
+      <span class="chips">
+        <button type="button" class="chip" id="earlier" title="Shift the range back by its own length">&lsaquo; earlier</button>
+        <button type="button" class="chip" id="later" title="Shift the range forward by its own length">later &rsaquo;</button>
+        <button type="button" class="chip" id="clear-dates" title="Show the whole season">all dates</button>
+      </span>
       <span id="presets" class="presets"><a href="#" data-preset="week">this week</a> <a href="#" data-preset="eight">next 8 weeks</a> <a href="#" data-preset="season">whole season</a></span>
     </div>
   </div>
-  <div class="row">
-    <span class="rowlabel">tour</span>
-    <div class="ctl">
+  <div class="opts">
+    <div class="group" role="group" aria-label="Tour">
+      <span class="lbl">Tour</span>
       <label><input type="checkbox" name="tour" value="ATP" checked> <span class="dot men"></span>men</label>
       <label><input type="checkbox" name="tour" value="WTA" checked> <span class="dot women"></span>women</label>
     </div>
-  </div>
-  <div class="row">
-    <span class="rowlabel">event</span>
-    <div class="ctl">
+    <div class="group" role="group" aria-label="Event">
+      <span class="lbl">Event</span>
       <label>level <select id="cat"><option value="">all</option></select></label>
       <label>surface <select id="surface"><option value="">all</option></select></label>
     </div>
   </div>
-  <div class="row">
-    <span class="rowlabel">search</span>
-    <div class="ctl">
+  <div class="opts">
+    <div class="group search" role="group" aria-label="Search">
+      <span class="lbl">Search</span>
       <input id="q" type="search" placeholder="tournament, city, or country" aria-label="Search">
-      <button type="button" id="reset" class="clear" title="Clear every filter">reset all</button>
     </div>
+  </div>
+  <div class="tools">
+    <button type="button" class="chip" id="reset" title="Clear every filter">Clear all filters</button>
   </div>
 </form>
 

@@ -1,42 +1,49 @@
-body { max-width: 60rem; margin: 1.5rem auto; padding: 0 1rem; font: 1rem/1.5 Georgia, "Times New Roman", serif; color: #1a1a1a; background: #fff; }
-@media (prefers-color-scheme: dark) { body { color: #e6e6e6; background: #141414; } a { color: #9cc4ff; } }
-h1 { font-weight: normal; font-size: 1.9rem; margin: 0 0 .4rem; }
-h2 { font-weight: normal; font-size: 1.2rem; margin: 1.5rem 0 .25rem; border-bottom: 1px solid #ccc; }
+/* One column of text in the browser's own font, written for a phone first,
+   dressed like newsheadlinesearch.com so the sites read as one hand: bold
+   labels in normal case, a blue filter panel, pill chips, white fields with
+   a slate edge, the map in a ruled box like that site's chart. The dot
+   colours are the data's own and stay. */
+:root { --ink: #1a1a1a; --bg: #fff; --muted: #555; --faint: #888; --line: #ccc; --hair: #e4e4e4; --panel: #e6eef9; --panel-edge: #b7cbe6; --field: #fff; --edge: #8ea6c7; --bar: #2f5d9e; --bar-sel: #1b3a66; --sel: #dbe7f7; --lit: #fff6d5; }
+@media (prefers-color-scheme: dark) {
+  :root { --ink: #e6e6e6; --bg: #141414; --muted: #a3a3a3; --faint: #777; --line: #333; --hair: #262626; --panel: #16212f; --panel-edge: #2d4461; --field: #0f1620; --edge: #4a6386; --bar: #7aa2d8; --bar-sel: #b3cdf0; --sel: #22354d; --lit: #3a3320; }
+  a { color: #9cc4ff; }
+}
+body { max-width: 60rem; margin: 1rem auto; padding: 0 .8rem; line-height: 1.4; color: var(--ink); background: var(--bg); }
+h1 { font-size: 1.8rem; margin: 0 0 .5rem; }
+h1 a { color: inherit; text-decoration: underline; }
+h2 { font-size: 1.15rem; margin: 1.3rem 0 .4rem; }
+.lede { margin: 0 0 .6rem; }
 .draft { color: #a33; font-style: italic; }
+.lbl { font-weight: bold; }
+.note { margin: 0 0 .6rem; font-size: .9rem; color: var(--muted); }
+input, button, select { font: inherit; color: inherit; }
+[hidden] { display: none !important; } /* the attribute wins over any display rule below */
+input[type=search], input[type=text], input[type=date], select { background: var(--field); border: 1px solid var(--edge); border-radius: .35rem; padding: .3rem .5rem; min-width: 0; max-width: 100%; }
+input[type=search], input[type=text], input[type=date] { appearance: none; -webkit-appearance: none; }
+select { max-width: min(22rem, calc(100vw - 9rem)); } /* long option names must not push the row past a phone's width */
+input:focus-visible, select:focus-visible, .chip:focus-visible { outline: 2px solid var(--bar); outline-offset: 1px; }
 
-/* Filters: one row per kind. A small label in a fixed column on the left, the controls
-   wrapping in a block of their own on the right; on a phone the label sits above the controls. */
-form { margin: 1rem 0; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; }
-form .row { display: grid; grid-template-columns: 5rem 1fr; align-items: baseline; padding: .5rem 0; }
-form .row + .row { border-top: 1px solid #eee; }
-.rowlabel { font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: #777; }
-.ctl { display: flex; flex-wrap: wrap; gap: .4rem .9rem; align-items: center; min-width: 0; }
-.ctl label { white-space: nowrap; }
-select { max-width: 100%; }
-@media (max-width: 40rem) { form .row { grid-template-columns: 1fr; row-gap: .3rem; } }
-input, select, button { font: inherit; }
-button.clear, .nudge button { font-size: .85rem; padding: .1rem .5rem; border: 1px solid #bbb; border-radius: .25rem; background: transparent; color: inherit; cursor: pointer; }
-button.clear:hover, .nudge button:hover { border-color: #666; }
-.nudge { white-space: nowrap; }
-#q { flex: 1 1 12rem; padding: .2rem .4rem; }
-.presets { font-size: .9em; }
-.presets a { margin-right: .7rem; }
+/* The filter panel: rows of groups, a bold label each; chips for the actions */
+.panel { display: flex; flex-direction: column; gap: .7rem; background: var(--panel); border: 1px solid var(--panel-edge); border-radius: .6rem; padding: .8rem; margin: 1rem 0; }
+.opts { display: flex; flex-direction: column; gap: .7rem; }
+.group { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .7rem; min-width: 0; }
+.group > .lbl { width: 100%; }
+.group label { white-space: nowrap; }
+.dates label, label:has(select) { font-size: .95rem; color: var(--muted); }
+.dates label { display: inline-flex; flex: 1 1 8rem; align-items: center; gap: .35rem; }
+.dates input { flex: 1 1 auto; width: 100%; font-size: .95rem; padding: .25rem .45rem; }
+.chips { display: inline-flex; flex-wrap: wrap; gap: .35rem; }
+.chip { font-size: .85rem; padding: .2rem .65rem; border: 1px solid var(--edge); border-radius: 999px; background: var(--field); color: inherit; text-decoration: none; cursor: pointer; white-space: nowrap; }
+.chip:hover { border-color: var(--bar); }
+/* The preset links are a line of their own, always the width of their row */
+.presets { flex-basis: 100%; min-width: 0; display: flex; flex-wrap: wrap; gap: .1rem .7rem; font-size: .9rem; }
+.search input[type=search] { flex: 1 1 12rem; font-size: 1rem; padding: .35rem .6rem; }
+.tools { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .8rem; }
 
-#map { height: 60vh; min-height: 24rem; margin: .5rem 0 .25rem; background: #eee; }
-table { border-collapse: collapse; width: 100%; font-size: .95rem; }
-td { padding: .25rem .5rem .25rem 0; vertical-align: top; }
-@media (max-width: 40rem) { tr { display: grid; grid-template-columns: max-content 1fr; column-gap: .6rem; padding: .3rem 0; } td { padding: 0; } td.city { grid-column: 2; } }
-td.when { white-space: nowrap; color: #555; }
-td.city a { color: inherit; }
-.tag { font-size: .8em; color: #555; }
-details { margin: 0 0 .75rem; font-size: .95rem; }
-summary { cursor: pointer; color: #555; }
-.pyramid { margin: .3rem 0 0; padding-left: 1.4rem; }
-.pyramid li { margin: .15rem 0; }
-.beside-note { margin: .6rem 0 0; }
-
-/* Legend: three colours (who plays), dot size for the level. */
-.legend { display: flex; flex-wrap: wrap; gap: .25rem 1rem; margin: 0 0 1rem; font-size: .85rem; color: #555; }
+/* The map in a ruled box, its legend under it, then the list */
+#map { height: 62vh; min-height: 20rem; max-height: 34rem; margin: .8rem 0 .3rem; background: var(--hair); border: 1px solid var(--line); border-radius: .6rem; overflow: hidden; }
+.leaflet-container { font-family: inherit; }
+.legend { display: flex; flex-wrap: wrap; gap: .25rem 1rem; margin: 0 0 1rem; font-size: .85rem; color: var(--muted); }
 .legend span { white-space: nowrap; }
 .legend .key { margin-right: -.4rem; }
 .dot { display: inline-block; width: .7em; height: .7em; border-radius: 50%; border: 1px solid rgba(0,0,0,.4); margin: 0 .25em 0 .1em; vertical-align: baseline; }
@@ -45,15 +52,34 @@ summary { cursor: pointer; color: #555; }
 .dot.both { background: #7a5c99; }
 .legend i.size { display: inline-block; border-radius: 50%; background: #999; border: 1px solid #333; vertical-align: middle; margin-right: .25em; }
 
-/* Labels beside dots, shown only where they do not collide (see placeLabels in app.js). */
-.leaflet-tooltip.marker-label { background: rgba(255,255,255,.85); border: 1px solid rgba(0,0,0,.15); border-radius: 3px; padding: 1px 5px; font: 600 .75rem/1.3 Georgia, serif; color: #1a1a1a; white-space: nowrap; box-shadow: 0 1px 2px rgba(0,0,0,.2); pointer-events: none; }
+/* Labels beside dots, shown only where they do not collide (see placeLabels in app.js);
+   they and the popups sit on the light tiles, so their colours are fixed, not the theme's. */
+.leaflet-tooltip.marker-label { background: rgba(255,255,255,.85); border: 1px solid rgba(0,0,0,.15); border-radius: 3px; padding: 1px 5px; font-weight: 600; font-size: .75rem; line-height: 1.3; color: #1a1a1a; white-space: nowrap; box-shadow: 0 1px 2px rgba(0,0,0,.2); pointer-events: none; }
 .leaflet-tooltip.marker-label::before { display: none; }
-
-.pop { font: .9rem/1.35 Georgia, serif; }
+.pop { font-size: .9rem; line-height: 1.35; }
 .pop b { display: block; margin-bottom: .2rem; }
-.none { color: #666; }
-@media (prefers-color-scheme: dark) {
-  td.when, .tag, .none, summary, .legend, .rowlabel { color: #999; }
-  h2 { border-color: #444; } form { border-color: #333; } form .row + .row { border-color: #2a2a2a; } #map { background: #222; }
-  button.clear, .nudge button { border-color: #555; }
+
+/* The list: a heading per day, rows with a hairline between them */
+table { border-collapse: collapse; width: 100%; font-size: .95rem; }
+tr + tr { border-top: 1px solid var(--hair); }
+td { padding: .3rem .5rem .3rem 0; vertical-align: top; }
+td.when { white-space: nowrap; color: var(--muted); }
+td.city a { color: inherit; }
+.tag { font-size: .85em; color: var(--muted); }
+.none { color: var(--muted); }
+details { margin: 0 0 .75rem; font-size: .95rem; }
+summary { cursor: pointer; }
+.pyramid { margin: .3rem 0 0; padding-left: 1.4rem; }
+.pyramid li { margin: .15rem 0; }
+.beside-note { margin: .6rem 0 0; }
+@media (max-width: 40rem) { tr { display: grid; grid-template-columns: max-content 1fr; column-gap: .6rem; padding: .3rem 0; } td { padding: 0; } td.city { grid-column: 2; } }
+
+@media (min-width: 40rem) {
+  body { margin-top: 1.5rem; padding: 0 1rem; }
+  .panel { padding: 1rem; }
+  .opts { flex-direction: row; flex-wrap: wrap; gap: .7rem 2rem; }
+  .group > .lbl { width: auto; min-width: 4.5rem; }
+  .dates label { flex: 0 1 auto; }
+  .dates input { flex: 0 1 auto; width: auto; }
+  #map { height: 60vh; min-height: 24rem; max-height: none; }
 }
